@@ -312,10 +312,11 @@
         .range([margin.top, height - margin.bottom])
         .padding(0.28);
 
-      // Color scale based on venue_area
+      // Color scale based on venue_area — sorted domain matches index.html
+      const allAreas = [...new Set(timeline.map(d => d.venue_area))].sort();
       const areaColor = d3.scaleOrdinal()
-        .domain([...new Set(top10.map(d => d.venue_area))])
-        .range(["#70e1d4", "#f6bd60", "#b8a1ff", "#ff7a90", "#8bd17c"]);
+        .domain(allAreas)
+        .range(["#70e1d4", "#f6bd60", "#b8a1ff", "#ff7a90", "#8bd17c", "#7cc9ff", "#f39ac7", "#c6d66f"]);
 
       // Grid lines
       svg.append("g")
