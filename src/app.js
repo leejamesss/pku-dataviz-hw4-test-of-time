@@ -99,13 +99,13 @@ function initPresentationMode() {
   const params = new URLSearchParams(window.location.search);
   const shouldStart = params.get("present") === "1" || window.location.hash === "#present";
   const steps = [
-    {id: "time", title: "Time · recognition lag", takeaway: "Test-of-Time recognition is usually delayed, so the project starts from the time gap between publication and award."},
+    {id: "time", title: "Time · recognition lag", takeaway: "Start with the time gap, then use Time Machine cases to show why long-term value is often recognized only after the ecosystem catches up."},
     {id: "venue", title: "Venue & Field", takeaway: "Venue and field counts show where this award history is visible, not a conference quality ranking."},
-    {id: "topic", title: "Topic Evolution", takeaway: "Long-term impact appears across several technical lineages, so representative papers matter more than a single topic label."},
+    {id: "topic", title: "Topic Evolution", takeaway: "Topic charts show broad lineages; Representative Paper Lineage turns those counts into reusable contributions and evidence-backed cases."},
     {id: "citation", title: "Citation & Impact", takeaway: "Citation depth is important, but breadth and trajectory show why high citation is not the whole story."},
     {id: "explorer", title: "Paper Explorer", takeaway: "The dashboard doubles as an evidence index: every claim can be traced back to searchable papers."},
-    {id: "benchmark", title: "Benchmark Lab", takeaway: "Percentiles make a selected case explainable relative to the dataset and its field."},
-    {id: "network", title: "Network / closing", takeaway: "Institution and country views extend the story to visible metadata, while keeping proxy limits explicit."}
+    {id: "benchmark", title: "Benchmark Lab", takeaway: "Benchmark percentiles and the Long-term Impact Signature explain selected papers without pretending to predict future awards."},
+    {id: "network", title: "Network / closing", takeaway: "Global Memory Map extends the story to visible affiliation metadata while explicitly avoiding country or institution ranking claims."}
   ];
   const exportTargets = [
     {id: "hero", selector: ".hero", filename: "dataviz-hw4-hero-overview.png"},
