@@ -259,3 +259,7 @@ Safe one-liner:
 ## Best-score demo route added to page
 
 The live page now includes a `#demo-route` section: a 6-step, 8-minute classroom route optimized for grading signal. Use it as the fallback if the presentation feels too feature-heavy: it tells the team exactly which high-end pieces to show and which claims to avoid.
+
+## Cross-module selected paper sync
+
+The page now has an `#evidence-thread` section. During live demo, select one paper from Explorer/Time Machine/Lineage/Map, then use Evidence Thread to narrate the same paper through Time, Topic, Citation, Signature, and Network. This is the most product-like interaction in the system and should be shown if there is enough time.

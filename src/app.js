@@ -104,6 +104,7 @@ function initPresentationMode() {
     {id: "topic", title: "Topic Evolution", takeaway: "Topic charts show broad lineages; Representative Paper Lineage turns those counts into reusable contributions and evidence-backed cases."},
     {id: "citation", title: "Citation & Impact", takeaway: "Citation depth is important, but breadth and trajectory show why high citation is not the whole story."},
     {id: "explorer", title: "Paper Explorer", takeaway: "The dashboard doubles as an evidence index: every claim can be traced back to searchable papers."},
+    {id: "evidence-thread", title: "Cross-module Evidence Thread", takeaway: "Selecting one paper synchronizes the story across time, topic, citation, benchmark, and network lenses."},
     {id: "benchmark", title: "Benchmark Lab", takeaway: "Benchmark percentiles and the Long-term Impact Signature explain selected papers without pretending to predict future awards."},
     {id: "rubric", title: "Rubric Receipt", takeaway: "A teacher-facing receipt maps the work to data, visual, interaction, story, integrity, and delivery evidence."},
     {id: "demo-route", title: "Best-score Demo Route", takeaway: "The final route shows exactly how to spend 8 minutes for maximum grading signal."},
@@ -116,6 +117,7 @@ function initPresentationMode() {
     {id: "topic", selector: "#topic", filename: "dataviz-hw4-topic-evolution.png"},
     {id: "citation", selector: "#citation", filename: "dataviz-hw4-citation-compare.png"},
     {id: "explorer", selector: "#explorer", filename: "dataviz-hw4-paper-explorer.png"},
+    {id: "evidence-thread", selector: "#evidence-thread", filename: "dataviz-hw4-evidence-thread.png"},
     {id: "benchmark", selector: "#benchmark", filename: "dataviz-hw4-benchmark-lab.png"},
     {id: "storyboard", selector: "#storyboard", filename: "dataviz-hw4-storyboard.png"},
     {id: "rubric", selector: "#rubric", filename: "dataviz-hw4-rubric-receipt.png"},
@@ -2520,8 +2522,10 @@ function topPaper(papers) {
 
 function updateDetail(p) {
   if (!p) return;
+  document.body.dataset.selectedPaper = p.paper_id || "";
   d3.selectAll(".selected-paper").classed("selected-paper", false);
   d3.selectAll("circle").filter(d => d && d.paper_id === p.paper_id).classed("selected-paper", true);
+  d3.selectAll(`[data-paper-id="${cssEscape(p.paper_id)}"], [data-time-machine-id="${cssEscape(p.paper_id)}"], [data-lineage-id="${cssEscape(p.paper_id)}"], [data-global-paper-id="${cssEscape(p.paper_id)}"]`).classed("selected-paper", true);
   d3.select("#paper-detail").html(`
     <div class="paper-title">${escapeHtml(p.title || "Untitled")}</div>
     <div class="paper-meta">
@@ -2549,6 +2553,58 @@ function updateDetail(p) {
     if (action === "compare-b") setComparePaper("b", p);
   });
   updateBenchmark(p);
+  updateEvidenceThread(p);
+}
+
+function updateEvidenceThread(p) {
+  const target = d3.select("#selected-evidence-thread");
+  if (target.empty() || !p) return;
+  const countries = parseListField(p.countries);
+  const institutions = parseListField(p.institutions);
+  const metrics = benchmarkMetrics(p, activePapers);
+  const bestMetric = metrics.slice().sort((a,b) => d3.descending(a.percentile, b.percentile))[0];
+  const topicPeers = activePapers
+    .filter(d => d.paper_id !== p.paper_id && d.topic_label === p.topic_label)
+    .sort((a,b) => d3.descending(num(a.citation_count), num(b.citation_count)))
+    .slice(0, 3);
+  const route = [
+    {label: "Time", value: `${fmt(num(p.recognition_lag))} year lag`, note: "delayed retrospective recognition"},
+    {label: "Topic", value: p.topic_label || "Topic", note: `same-topic peers: ${topicPeers.length || "needs review"}`},
+    {label: "Citation", value: `${fmt(num(p.citation_count))} citations`, note: "depth signal, not sole value"},
+    {label: "Signature", value: bestMetric ? `${bestMetric.label} p${fmt1(bestMetric.percentile)}` : "profile", note: "descriptive corpus profile"},
+    {label: "Network", value: countries.slice(0, 3).join(" / ") || "metadata pending", note: `${institutions.length || 0} visible institution tags`}
+  ];
+  target.html(`
+    <div class="thread-hero-card">
+      <span class="thread-label">Selected paper</span>
+      <h3>${escapeHtml(p.title || "Untitled")}</h3>
+      <p>${escapeHtml(p.venue || "Venue")} · ${p.year || "year"} → ${p.announcement_year || "award"} · ${escapeHtml(p.topic_label || "topic")}</p>
+      <div class="thread-actions">
+        <button type="button" data-thread-action="evidence">Open evidence card</button>
+        <button type="button" data-thread-action="benchmark">Jump to Benchmark</button>
+      </div>
+    </div>
+    <div class="thread-route">
+      ${route.map((d,i) => `
+        <article>
+          <span>0${i + 1} · ${escapeHtml(d.label)}</span>
+          <b>${escapeHtml(d.value)}</b>
+          <p>${escapeHtml(d.note)}</p>
+        </article>
+      `).join("")}
+    </div>
+    <div class="thread-script">
+      <b>30-second demo script</b>
+      <span>这篇论文先在 Time 维度展示 delayed recognition，再在 Topic 维度进入同类贡献路径；Citation 和 Signature 解释它的影响形态，Network 只作为 affiliation metadata 的可见扩散线索。</span>
+    </div>
+  `);
+  target.select('[data-thread-action="evidence"]').on("click", () => openEvidenceCard(p));
+  target.select('[data-thread-action="benchmark"]').on("click", () => document.getElementById("benchmark")?.scrollIntoView({behavior: "smooth", block: "start"}));
+}
+
+function cssEscape(value) {
+  if (window.CSS?.escape) return CSS.escape(String(value || ""));
+  return String(value || "").replace(/[^a-zA-Z0-9_-]/g, "\$&");
 }
 
 function setNotes({papers, venues, areas, topics}) {
