@@ -18,6 +18,7 @@
       <a href="#explorer">Explorer</a>
       <a href="#benchmark">Benchmark</a>
       <a href="#storyboard">Storyboard</a>
+      <a href="#rubric">Rubric</a>
       <a href="#glossary">Glossary</a>
       <a href="#network">Network</a>
     </nav>
@@ -284,6 +285,64 @@
       </div>
     </section>
 
+
+    <section id="rubric" class="section rubric-section">
+      <div class="section-title-row">
+        <div>
+          <p class="section-kicker">Teacher-facing receipt</p>
+          <h2>这套项目为什么不只是“多做了几个图”？</h2>
+        </div>
+        <p class="reading-note">Use this section near the end of the demo when time allows: it maps visible features to grading evidence, while keeping risky claims bounded.</p>
+      </div>
+      <div class="rubric-receipt" aria-label="Full-score rubric receipt">
+        <article class="rubric-card">
+          <span class="rubric-score">Data</span>
+          <h3>统一数据链路</h3>
+          <p>250 篇 Test-of-Time 论文连接 award seed、OpenAlex metadata、derived metrics 和 case evidence。</p>
+          <b>Show</b>
+          <span>`data/papers_enriched.csv` + homepage summary cards</span>
+        </article>
+        <article class="rubric-card">
+          <span class="rubric-score">Visual</span>
+          <h3>多层可视化结构</h3>
+          <p>时间分布、领域地图、topic evolution、citation/breadth、benchmark、network 形成递进视图。</p>
+          <b>Show</b>
+          <span>Tour mode: Time → Topic → Benchmark → Network</span>
+        </article>
+        <article class="rubric-card">
+          <span class="rubric-score">Interaction</span>
+          <h3>可探索证据库</h3>
+          <p>Paper Explorer、Benchmark Lab 和 evidence cards 支持搜索、排序、点击联动和答辩定位。</p>
+          <b>Show</b>
+          <span>Search one keyword, select a paper, then show its signature</span>
+        </article>
+        <article class="rubric-card">
+          <span class="rubric-score">Story</span>
+          <h3>研究问题驱动</h3>
+          <p>从 recognition lag 到 contribution lineage，再到 impact signature 和 global memory，形成完整叙事。</p>
+          <b>Show</b>
+          <span>Storyboard + final presentation route</span>
+        </article>
+        <article class="rubric-card">
+          <span class="rubric-score">Integrity</span>
+          <h3>边界意识清楚</h3>
+          <p>所有 proxy 都有 safe wording：不预测未来 Best Paper，不做国家/机构排名，不把引用当作唯一价值。</p>
+          <b>Show</b>
+          <span>Glossary + Defense Q&A Pack</span>
+        </article>
+        <article class="rubric-card">
+          <span class="rubric-score">Delivery</span>
+          <h3>展示可交付</h3>
+          <p>Presentation mode、guided tour 和 one-click export 降低现场风险，也能直接生成 PPT-ready 备份图。</p>
+          <b>Show</b>
+          <span>Present / Tour / Export buttons</span>
+        </article>
+      </div>
+      <div class="rubric-closeout">
+        <strong>One-line closeout for class:</strong>
+        <span>我们的贡献不是单个预测模型，而是一个可解释、可追溯、可展示的长期影响分析系统。</span>
+      </div>
+    </section>
     <section id="glossary" class="section">
       <div class="section-title-row">
         <div>
@@ -409,6 +468,7 @@
             <option value="explorer">Paper explorer</option>
             <option value="benchmark">Benchmark lab</option>
             <option value="storyboard">Storyboard / division of labor</option>
+            <option value="rubric">Rubric receipt</option>
             <option value="network">Network</option>
           </select>
           <label for="export-quality">Quality</label>

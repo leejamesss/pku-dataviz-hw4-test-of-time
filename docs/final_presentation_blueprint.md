@@ -15,8 +15,9 @@
 | 7 | A/D | 0:45 | Evidence Index | Paper Explorer 把总体趋势落回具体论文，展示和答疑时可以按主题、会议、指标快速定位案例。 | `docs/demo/explorer-evidence-index.png` |
 | 8 | E/A | 1:00 | Benchmark + Impact Signature | 单篇论文可以和全数据集/同领域比较，并形成 descriptive long-term impact profile。 | `docs/demo/benchmark-lab.png` |
 | 9 | F | 1:05 | Network + Global Memory Map | 长期影响也沉淀在机构和国家/地区可见元数据中，但不能解释为国家/机构排名。 | `docs/demo/network-diffusion.png` |
-| 10 | A/F | 0:50 | Methods & Boundaries | 结论基于 award seed + OpenAlex public metadata + derived proxy，不声称官方评奖因果。 | `docs/methods_and_limitations.md` |
-| 11 | A | 0:40 | Conclusion | 经得起时间检验的研究需要用时间、主题、引用、证据案例和网络多维观察。 | summary / closing slide |
+| 10 | A | 0:35 | Rubric Receipt | 把数据、视觉、交互、故事、边界和展示交付映射成老师可见的评分证据。 | `#rubric` section / export PNG |
+| 11 | A/F | 0:50 | Methods & Boundaries | 结论基于 award seed + OpenAlex public metadata + derived proxy，不声称官方评奖因果。 | `docs/methods_and_limitations.md` |
+| 12 | A | 0:40 | Conclusion | 经得起时间检验的研究需要用时间、主题、引用、证据案例和网络多维观察。 | summary / closing slide |
 
 预计总时长：9 分钟 10 秒。若课程要求压缩到 8 分钟，删去 Slide 8 的现场演示，只保留一句 Benchmark Lab 说明。
 
@@ -246,3 +247,11 @@ Before class, copy these images into the PPT folder or insert them directly into
 | Representative Paper Lineage | Connects topic evolution to reusable contribution pathways. | “Topic labels guide navigation; final contribution claims come from evidence-checked paper cards.” |
 | Long-term Impact Signature | Keeps the user’s “best paper potential” idea while avoiding overclaim. | “This is a descriptive profile inside our Test-of-Time corpus, not a future award prediction model.” |
 | Global Memory Map | Gives the project a premium spatial / institutional layer. | “This map visualizes visible affiliation metadata, not national research quality.” |
+
+## Optional teacher-facing closeout
+
+If the presentation has 30–40 seconds left, show the Rubric Receipt section before limitations. The purpose is not to beg for points; it makes the work legible as six dimensions of value: data pipeline, visual structure, interaction, research story, integrity boundaries, and delivery polish.
+
+Safe one-liner:
+
+> 我们的贡献不是单个预测模型，而是一个可解释、可追溯、可展示的长期影响分析系统。

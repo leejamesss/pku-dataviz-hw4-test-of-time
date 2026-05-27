@@ -105,6 +105,7 @@ function initPresentationMode() {
     {id: "citation", title: "Citation & Impact", takeaway: "Citation depth is important, but breadth and trajectory show why high citation is not the whole story."},
     {id: "explorer", title: "Paper Explorer", takeaway: "The dashboard doubles as an evidence index: every claim can be traced back to searchable papers."},
     {id: "benchmark", title: "Benchmark Lab", takeaway: "Benchmark percentiles and the Long-term Impact Signature explain selected papers without pretending to predict future awards."},
+    {id: "rubric", title: "Rubric Receipt", takeaway: "A teacher-facing receipt maps the work to data, visual, interaction, story, integrity, and delivery evidence."},
     {id: "network", title: "Network / closing", takeaway: "Global Memory Map extends the story to visible affiliation metadata while explicitly avoiding country or institution ranking claims."}
   ];
   const exportTargets = [
@@ -116,6 +117,7 @@ function initPresentationMode() {
     {id: "explorer", selector: "#explorer", filename: "dataviz-hw4-paper-explorer.png"},
     {id: "benchmark", selector: "#benchmark", filename: "dataviz-hw4-benchmark-lab.png"},
     {id: "storyboard", selector: "#storyboard", filename: "dataviz-hw4-storyboard.png"},
+    {id: "rubric", selector: "#rubric", filename: "dataviz-hw4-rubric-receipt.png"},
     {id: "network", selector: "#network", filename: "dataviz-hw4-network.png"}
   ];
   let tourIndex = 0;
@@ -1201,18 +1203,135 @@ function renderGlobalMemoryMap(countries, institutions, papers) {
       if (!prev || num(paper.citation_count) > num(prev.citation_count)) paperByCountry.set(country, paper);
     }
   }
+  const countryCoords = {
+    US: [-98, 39], CA: [-106, 57], GB: [-2, 54], DE: [10, 51], IL: [35, 31.5],
+    FR: [2, 46], AU: [134, -25], IT: [12, 42], CH: [8, 47], NL: [5, 52],
+    ES: [-4, 40], MX: [-102, 23], CN: [104, 35], BE: [4.5, 50.5], KR: [127.5, 36],
+    TW: [121, 23.7], SG: [104, 1.35], AT: [14, 47.5], IS: [-19, 65], IN: [78, 22],
+    FI: [26, 64], DK: [10, 56], VG: [-64.6, 18.4]
+  };
   const enriched = countries
     .filter(d => num(d.paper_count) > 0)
     .map(d => ({
       ...d,
       countryInfo: countryEmojis[d.country] || {emoji: "◎", name: d.country},
       institutions: instByCountry.get(d.country) || [],
-      paper: paperByCountry.get(d.country)
+      paper: paperByCountry.get(d.country),
+      coords: countryCoords[d.country]
     }))
-    .sort((a,b) => d3.descending(num(a.paper_count), num(b.paper_count)))
-    .slice(0, 8);
+    .filter(d => d.coords)
+    .sort((a,b) => d3.descending(num(a.paper_count), num(b.paper_count)));
 
-  target.selectAll("article.global-memory-item").data(enriched).join("article")
+  const topCards = enriched.slice(0, 6);
+  target.html(`
+    <div class="world-map-panel">
+      <svg class="world-memory-svg" viewBox="0 0 980 480" role="img" aria-label="World map of visible Test-of-Time paper country metadata"></svg>
+      <div class="world-map-note">
+        <b>Map reading</b>
+        <span>Bubble size = papers with visible country metadata. Color intensity follows average citation count. This is metadata visibility, not national ranking.</span>
+      </div>
+    </div>
+    <div class="global-memory-card-list"></div>
+  `);
+
+  const svg = target.select(".world-memory-svg");
+  const width = 980;
+  const height = 480;
+  const projection = d3.geoNaturalEarth1().fitExtent([[26, 22], [954, 438]], {type: "Sphere"});
+  const path = d3.geoPath(projection);
+  const maxPapers = d3.max(enriched, d => num(d.paper_count)) || 1;
+  const maxCitations = d3.max(enriched, d => num(d.avg_citation_count)) || 1;
+  const radius = d3.scaleSqrt().domain([1, maxPapers]).range([5, 34]);
+  const colorScale = d3.scaleLinear().domain([0, maxCitations]).range(["#70e1d4", "#f6bd60"]);
+
+  svg.append("path")
+    .datum({type: "Sphere"})
+    .attr("class", "world-sphere")
+    .attr("d", path);
+
+  svg.append("path")
+    .datum(d3.geoGraticule10())
+    .attr("class", "world-graticule")
+    .attr("d", path);
+
+  const continents = [
+    {name: "North America", points: [[-168,72],[-55,72],[-52,15],[-90,8],[-118,23],[-128,50]]},
+    {name: "South America", points: [[-82,13],[-35,8],[-45,-55],[-76,-52],[-81,-20]]},
+    {name: "Europe", points: [[-12,72],[40,70],[45,36],[8,35],[-12,44]]},
+    {name: "Africa", points: [[-18,36],[52,34],[50,-35],[18,-35],[-18,-8]]},
+    {name: "Asia", points: [[40,72],[180,68],[160,6],[104,-8],[72,8],[44,28]]},
+    {name: "Australia", points: [[112,-10],[154,-12],[153,-44],[114,-43]]}
+  ];
+  svg.append("g").attr("class", "continent-layer")
+    .selectAll("path").data(continents).join("path")
+    .attr("d", d => {
+      const coords = d.points.map(p => projection(p)).filter(Boolean);
+      return coords.length ? `M${coords.map(p => p.join(",")).join("L")}Z` : "";
+    })
+    .append("title").text(d => d.name);
+
+  const arcs = enriched.slice(1, 9).map(d => ({source: enriched[0], target: d})).filter(d => d.source && d.target);
+  svg.append("g").attr("class", "memory-arc-layer")
+    .selectAll("path").data(arcs).join("path")
+    .attr("class", "memory-arc")
+    .attr("d", d => {
+      const a = projection(d.source.coords);
+      const b = projection(d.target.coords);
+      if (!a || !b) return "";
+      const mx = (a[0] + b[0]) / 2;
+      const my = (a[1] + b[1]) / 2 - Math.max(24, Math.abs(a[0] - b[0]) * 0.12);
+      return `M${a[0]},${a[1]} Q${mx},${my} ${b[0]},${b[1]}`;
+    });
+
+  const marker = svg.append("g").attr("class", "memory-marker-layer")
+    .selectAll("g").data(enriched).join("g")
+    .attr("class", "memory-marker")
+    .attr("transform", d => {
+      const [x, y] = projection(d.coords);
+      return `translate(${x},${y})`;
+    })
+    .attr("tabindex", 0)
+    .attr("role", "button")
+    .attr("aria-label", d => `${d.countryInfo.name}: ${fmt(num(d.paper_count))} papers. Press Enter to open representative paper.`)
+    .on("click", (_, d) => { if (d.paper) openEvidenceCard(d.paper); })
+    .on("keydown", (event, d) => {
+      if ((event.key === "Enter" || event.key === " ") && d.paper) {
+        event.preventDefault();
+        openEvidenceCard(d.paper);
+      }
+    });
+
+  marker.append("circle")
+    .attr("r", d => radius(num(d.paper_count)))
+    .attr("fill", d => colorScale(num(d.avg_citation_count)))
+    .attr("fill-opacity", 0.58)
+    .attr("stroke", "#eef4ff")
+    .attr("stroke-opacity", 0.72)
+    .attr("stroke-width", 1.2);
+
+  marker.append("circle")
+    .attr("r", d => radius(num(d.paper_count)) + 5)
+    .attr("class", "memory-marker-halo");
+
+  marker.filter((d, i) => i < 10).append("text")
+    .attr("class", "memory-map-label")
+    .attr("x", d => radius(num(d.paper_count)) + 7)
+    .attr("y", 4)
+    .text(d => d.country);
+
+  marker.append("title")
+    .text(d => `${d.countryInfo.name}: ${fmt(num(d.paper_count))} papers · avg ${fmt(num(d.avg_citation_count))} citations`);
+
+  svg.append("g").attr("class", "memory-map-legend")
+    .attr("transform", `translate(${width - 232},${height - 88})`)
+    .call(g => {
+      g.append("text").attr("x", 0).attr("y", -18).text("Bubble = visible papers");
+      [5, 18, 34].forEach((r, i) => {
+        g.append("circle").attr("cx", 22 + i * 58).attr("cy", 20).attr("r", r).attr("fill", "none").attr("stroke", "rgba(238,244,255,.62)");
+      });
+    });
+
+  target.select(".global-memory-card-list").selectAll("article.global-memory-item").data(topCards).join("article")
     .attr("class", "global-memory-item")
     .html(d => `
       <div class="global-memory-head">
