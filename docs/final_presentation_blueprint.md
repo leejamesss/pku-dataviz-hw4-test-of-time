@@ -255,3 +255,7 @@ If the presentation has 30–40 seconds left, show the Rubric Receipt section be
 Safe one-liner:
 
 > 我们的贡献不是单个预测模型，而是一个可解释、可追溯、可展示的长期影响分析系统。
+
+## Best-score demo route added to page
+
+The live page now includes a `#demo-route` section: a 6-step, 8-minute classroom route optimized for grading signal. Use it as the fallback if the presentation feels too feature-heavy: it tells the team exactly which high-end pieces to show and which claims to avoid.
